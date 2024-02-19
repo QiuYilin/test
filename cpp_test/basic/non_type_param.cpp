@@ -19,8 +19,7 @@ class Message2 {
 
 int main() {
   static char const s17[] = "hi";
-  Message<int, s17>
-      m17;  // no matching constructor for initialization of 'Message<int,s17>'
+  Message<int, s17> m17(2);
   m17.print();
 
   static char const s172[] = "hi";

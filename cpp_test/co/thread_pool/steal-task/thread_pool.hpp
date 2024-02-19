@@ -16,7 +16,7 @@ class thread_pool {
   typedef function_wrapper task_type;
   std::atomic_bool done;
   threadsafe_queue<task_type> pool_work_queue;
-  std::vector<std::unique_ptr<work_stealing_queue> > queues;
+  std::vector<std::unique_ptr<work_stealing_queue>> queues;
   std::vector<std::thread> threads;
   join_threads joiner;
 
@@ -67,12 +67,36 @@ class thread_pool {
 
   ~thread_pool() { done = true; }
 
-  template <typename FunctionType>
-  std::future<typename std::result_of<FunctionType()>::type> submit(
-      FunctionType f) {
-    typedef typename std::result_of<FunctionType()>::type result_type;
-    std::packaged_task<result_type()> task(f);
-    std::future<result_type> res(task.get_future());
+  // template <typename FunctionType>
+  // std::future<typename std::result_of<FunctionType()>::type> submit(
+  //     FunctionType f) {
+  //   typedef typename std::result_of<FunctionType()>::type result_type;
+  //   std::packaged_task<result_type()> task(f);
+  //   std::future<result_type> res(task.get_future());
+  //   if (local_work_queue) {
+  //     local_work_queue->push(std::move(task));
+  //   } else {
+  //     pool_work_queue.push(std::move(task));
+  //   }
+  //   return res;
+  // }
+
+  template <typename F, typename... Args>
+  decltype(auto) submit(F&& f, Args&&... args) {
+    // Create a function with bounded parameters ready to execute
+    // std::bind style
+    // std::function<decltype(f(args...))()> func =
+    //     std::bind(std::forward<F>(f), std::forward<Args>(args)...);
+
+    // lambda style
+    auto func = [f, args...]() mutable {
+      std::invoke(std::forward<F>(f), std::forward<Args>(args)...);
+    };
+
+    // typedef typename std::result_of_t<F(Args...)> result_type;
+
+    std::packaged_task<void()> task(func);  // 这里的对象如何处理
+    std::future<void> res(task.get_future());
     if (local_work_queue) {
       local_work_queue->push(std::move(task));
     } else {

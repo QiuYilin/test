@@ -12,3 +12,8 @@ add_executable(${project_name} main.cpp
 add_executable(non_type_param non_type_param.cpp 
 )
 
+add_executable(foreach foreach.hpp  foreach.cpp 
+)
+
+add_executable(invoke invoke.cpp 
+)
