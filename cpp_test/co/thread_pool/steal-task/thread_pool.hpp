@@ -81,22 +81,15 @@ class thread_pool {
   //   return res;
   // }
 
-  template <typename F, typename... Args>
-  decltype(auto) submit(F&& f, Args&&... args) {
-    // Create a function with bounded parameters ready to execute
-    // std::bind style
-    // std::function<decltype(f(args...))()> func =
-    //     std::bind(std::forward<F>(f), std::forward<Args>(args)...);
+  template <typename Callable, typename... Args>
+  decltype(auto) submit(Callable&& f, Args&&... args) {
+    typedef typename std::invoke_result_t<Callable, Args...> result_type;
 
-    // lambda style
-    auto func = [f, args...]() mutable {
-      std::invoke(std::forward<F>(f), std::forward<Args>(args)...);
-    };
-
-    // typedef typename std::result_of_t<F(Args...)> result_type;
-
-    std::packaged_task<void()> task(func);  // 这里的对象如何处理
-    std::future<void> res(task.get_future());
+    std::packaged_task<result_type()> task([f, args...]() mutable {
+      return std::invoke(std::forward<Callable>(f),
+                         std::forward<Args>(args)...);
+    });
+    std::future<result_type> res(task.get_future());
     if (local_work_queue) {
       local_work_queue->push(std::move(task));
     } else {
