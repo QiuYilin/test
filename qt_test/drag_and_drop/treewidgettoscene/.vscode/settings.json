@@ -1,0 +1,11 @@
+{
+    "files.associations": {
+        "sstream": "cpp",
+        "qwidget": "cpp",
+        "qmimedata": "cpp",
+        "qdebug": "cpp",
+        "qhboxlayout": "cpp",
+        "qtreewidget": "cpp",
+        "qgraphicsview": "cpp"
+    }
+}
