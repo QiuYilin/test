@@ -1,0 +1,7 @@
+{
+    "files.associations": {
+        "any": "cpp",
+        "xstring": "cpp",
+        "mutex": "cpp"
+    }
+}

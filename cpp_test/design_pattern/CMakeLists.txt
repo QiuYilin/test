@@ -12,3 +12,6 @@ add_executable( proxy Structural/proxy.cpp
 
 add_executable( composite Structural/composite.cpp 
 )
+
+add_executable( observer1 Behavioral/observer1.cpp 
+)
