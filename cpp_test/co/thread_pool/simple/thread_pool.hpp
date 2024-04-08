@@ -5,18 +5,17 @@
 #include <thread>
 #include <vector>
 
+#include "join_threads.hpp"
 #include "threadsafe_queue.hpp"
 
-struct join_threads {
-  join_threads(std::vector<std::thread>&) {}
-};
-
 class thread_pool {
-  threadsafe_queue<std::function<void()>> work_queue;
-  std::vector<std::thread> threads;
-  join_threads joiner;
+  threadsafe_queue<std::function<void()>>
+      work_queue;  // 管理任务队列的线程安全队列，只考虑简单函数，不需要返回值
+  // 有返回值怎么办
+  std::vector<std::thread> threads;  // 工作线程
+  join_threads joiner;               // RAII
 
-  void worker_thread() {
+  void worker_thread() {  // 执行线程的函数
     while (!done) {
       std::function<void()> task;
       if (work_queue.try_pop(task)) {
@@ -28,8 +27,13 @@ class thread_pool {
   }
 
  public:
-  thread_pool() : done(false), joiner(threads) {
-    unsigned const thread_count = std::thread::hardware_concurrency();
+  thread_pool()
+      : done(false),
+        joiner(
+            threads) {  // 运行固定数量的线程，这些线程从一开始就去尝试从队列拿任务
+    // 必须按照done worker_queue threads的顺序析构
+    unsigned const thread_count =
+        std::thread::hardware_concurrency();  // 获取硬件支持多少个并发线程
     try {
       for (unsigned i = 0; i < thread_count; ++i) {
         threads.push_back(std::thread(&thread_pool::worker_thread, this));
@@ -42,9 +46,13 @@ class thread_pool {
 
   ~thread_pool() { done = true; }
 
-  template <typename FunctionType>
-  void submit(FunctionType f) {
-    work_queue.push(std::function<void()>(f));
+  template <typename Callable, typename... Args>
+  void submit(Callable&& f,
+              Args&&... args) {  // 将函数包装成std::function<void()>实例
+    auto func = [f, args...]() mutable {
+      std::invoke(std::forward<Callable>(f), std::forward<Args>(args)...);
+    };
+    work_queue.push(func);
   }
 
   std::atomic_bool done;

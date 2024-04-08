@@ -67,3 +67,5 @@ add_executable(parallel_quick_sort parallel_quick_sort.cpp)
 
 add_executable(multi_future multi_future.cpp)
 
+add_executable(thread_local thread_local.cpp)
+

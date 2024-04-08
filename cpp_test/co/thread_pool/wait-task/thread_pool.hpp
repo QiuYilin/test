@@ -9,7 +9,8 @@
 
 #include "threadsafe_queue.hpp"
 
-class function_wrapper {
+class
+    function_wrapper {  // 这里主要是因为std::packaged_task的实例是void(),所以没有做成可变参数模板也能使用
   struct impl_base {
     virtual void call() = 0;
     virtual ~impl_base() {}
@@ -81,12 +82,14 @@ class thread_pool {
   /// @tparam FunctionType
   /// @param f
   /// @return
-  template <typename FunctionType>
-  std::future<typename std::result_of<FunctionType()>::type> submit(
-      FunctionType f) {
-    typedef typename std::result_of<FunctionType()>::type result_type;
+  template <typename Callable, typename... Args>
+  decltype(auto) submit(Callable f, Args... args) {
+    typedef typename std::invoke_result_t<Callable, Args...> result_type;
 
-    std::packaged_task<result_type()> task(std::move(f));
+    std::packaged_task<result_type()> task([f, args...]() mutable {
+      return std::invoke(std::forward<Callable>(f),
+                         std::forward<Args>(args)...);
+    });
     std::future<result_type> res(task.get_future());
     work_queue.push(std::move(task));
     return res;

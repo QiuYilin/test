@@ -18,7 +18,7 @@ void InterruptibleThread::interrupt()
 {
     if (flag)
     {
-        flag->set();
+        flag->set();//线程中断时，需要合法指针作为中断标志
     }
 }
 

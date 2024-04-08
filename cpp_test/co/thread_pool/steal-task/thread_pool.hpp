@@ -20,8 +20,9 @@ class thread_pool {
   std::vector<std::thread> threads;
   join_threads joiner;
 
-  static thread_local work_stealing_queue* local_work_queue;
-  static thread_local unsigned my_index;
+  inline static thread_local work_stealing_queue*
+      local_work_queue;  // 这可能是个分层锁
+  inline static thread_local unsigned my_index;
 
   void worker_thread(unsigned my_index_) {
     my_index = my_index_;
@@ -50,8 +51,9 @@ class thread_pool {
   }
 
  public:
-  thread_pool() : done(false), joiner(threads) {
-    unsigned const thread_count = std::thread::hardware_concurrency();
+  thread_pool(unsigned const thread_count = std::thread::hardware_concurrency())
+      : done(false), joiner(threads) {
+    // unsigned const thread_count = std::thread::hardware_concurrency();
 
     try {
       for (unsigned i = 0; i < thread_count; ++i) {
@@ -66,20 +68,6 @@ class thread_pool {
   }
 
   ~thread_pool() { done = true; }
-
-  // template <typename FunctionType>
-  // std::future<typename std::result_of<FunctionType()>::type> submit(
-  //     FunctionType f) {
-  //   typedef typename std::result_of<FunctionType()>::type result_type;
-  //   std::packaged_task<result_type()> task(f);
-  //   std::future<result_type> res(task.get_future());
-  //   if (local_work_queue) {
-  //     local_work_queue->push(std::move(task));
-  //   } else {
-  //     pool_work_queue.push(std::move(task));
-  //   }
-  //   return res;
-  // }
 
   template <typename Callable, typename... Args>
   decltype(auto) submit(Callable&& f, Args&&... args) {

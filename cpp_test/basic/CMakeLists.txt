@@ -17,3 +17,12 @@ add_executable(foreach foreach.hpp  foreach.cpp
 
 add_executable(invoke invoke.cpp 
 )
+
+add_executable(function function.cpp 
+)
+
+add_executable(dynamic_memory_alloc dynamic_memory_alloc.cpp 
+)
+
+add_executable(compare compare.cpp 
+)
