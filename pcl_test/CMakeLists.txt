@@ -46,8 +46,8 @@ add_executable(passthrough octree/octree_change_detection.cpp
 add_executable(voxelgrid filter/voxelgrid.cpp
 )
 
-# add_executable(covariance_sampling filter/covariance_sampling.cpp
-# )
+add_executable(covariance_sampling filter/covariance_sampling.cpp
+)
 
 add_executable(range_image_creation range_image/range_image_creation.cpp
 )
@@ -88,7 +88,7 @@ target_link_libraries(octree_search PRIVATE ${PCL_LIBRARIES})
 target_link_libraries(octree_change_detection PRIVATE ${PCL_LIBRARIES})
 target_link_libraries(passthrough PRIVATE ${PCL_LIBRARIES})
 target_link_libraries(voxelgrid PRIVATE ${PCL_LIBRARIES})
-# target_link_libraries(covariance_sampling PRIVATE ${PCL_LIBRARIES})
+target_link_libraries(covariance_sampling PRIVATE ${PCL_LIBRARIES})
 target_link_libraries(range_image_creation PRIVATE ${PCL_LIBRARIES})
 target_link_libraries(iterative_closest_point PRIVATE ${PCL_LIBRARIES})
 target_link_libraries(pairwise_incremental_registration PRIVATE ${PCL_LIBRARIES})
