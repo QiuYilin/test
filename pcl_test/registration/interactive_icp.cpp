@@ -83,7 +83,6 @@ int main(int argc, char* argv[]) {
   print4x4Matrix(transformation_matrix);
 
   // Executing the transformation
-  pcl::transformPointCloud(*cloud_in, *cloud_icp, transformation_matrix);
   *cloud_tr = *cloud_icp;  // We backup cloud_icp into cloud_tr for later use
 
   // The Iterative Closest Point algorithm

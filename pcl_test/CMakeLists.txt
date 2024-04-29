@@ -14,6 +14,13 @@ endif()
 
 find_package(PCL CONFIG REQUIRED)
 
+find_package(OpenMP COMPONENTS C CXX)
+if(OpenMP_FOUND)
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
+set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${OpenMP_EXE_LINKER_FLAGS}")
+endif()
+
 # add_executable(registration registration.cpp
 # )
 
@@ -46,8 +53,8 @@ add_executable(passthrough octree/octree_change_detection.cpp
 add_executable(voxelgrid filter/voxelgrid.cpp
 )
 
-add_executable(covariance_sampling filter/covariance_sampling.cpp
-)
+# add_executable(covariance_sampling filter/covariance_sampling.cpp
+# )
 
 add_executable(range_image_creation range_image/range_image_creation.cpp
 )
@@ -55,8 +62,8 @@ add_executable(range_image_creation range_image/range_image_creation.cpp
 add_executable(iterative_closest_point registration/iterative_closest_point.cpp
 )
 
-add_executable(pairwise_incremental_registration registration/pairwise_incremental_registration.cpp
-)
+# add_executable(pairwise_incremental_registration registration/pairwise_incremental_registration.cpp
+# )
 
 add_executable(normal_distributions_transform registration/normal_distributions_transform.cpp
 )
@@ -79,6 +86,12 @@ add_executable(extract_indices filter/extract_indices.cpp
 add_executable(pointcloud2 advanced/pointcloud2.cpp
 )
 
+#add_executable(uorganize_to_organized advanced/uorganize_to_organized.cpp)
+
+add_executable(pfhf registration/pfhf.cpp)
+
+add_executable(normal_estimation features/normal_estimation)
+
 target_link_libraries(pcd_read PRIVATE ${PCL_LIBRARIES})
 target_link_libraries(pcd_write PRIVATE ${PCL_LIBRARIES})
 target_link_libraries(concatenate_clouds PRIVATE ${PCL_LIBRARIES})
@@ -88,10 +101,10 @@ target_link_libraries(octree_search PRIVATE ${PCL_LIBRARIES})
 target_link_libraries(octree_change_detection PRIVATE ${PCL_LIBRARIES})
 target_link_libraries(passthrough PRIVATE ${PCL_LIBRARIES})
 target_link_libraries(voxelgrid PRIVATE ${PCL_LIBRARIES})
-target_link_libraries(covariance_sampling PRIVATE ${PCL_LIBRARIES})
+#target_link_libraries(covariance_sampling PRIVATE ${PCL_LIBRARIES})
 target_link_libraries(range_image_creation PRIVATE ${PCL_LIBRARIES})
 target_link_libraries(iterative_closest_point PRIVATE ${PCL_LIBRARIES})
-target_link_libraries(pairwise_incremental_registration PRIVATE ${PCL_LIBRARIES})
+#target_link_libraries(pairwise_incremental_registration PRIVATE ${PCL_LIBRARIES})
 target_link_libraries(normal_distributions_transform PRIVATE ${PCL_LIBRARIES})
 target_link_libraries(interactive_icp PRIVATE ${PCL_LIBRARIES})
 target_link_libraries(alignment_prerejective PRIVATE ${PCL_LIBRARIES})
@@ -99,3 +112,6 @@ target_link_libraries(approximatevoxelgrid PRIVATE ${PCL_LIBRARIES})
 target_link_libraries(project_inliers PRIVATE ${PCL_LIBRARIES})
 target_link_libraries(extract_indices PRIVATE ${PCL_LIBRARIES})
 target_link_libraries(pointcloud2 PRIVATE ${PCL_LIBRARIES})
+#target_link_libraries(uorganize_to_organized PRIVATE ${PCL_LIBRARIES})
+target_link_libraries(pfhf PRIVATE ${PCL_LIBRARIES})
+target_link_libraries(normal_estimation PRIVATE ${PCL_LIBRARIES})
